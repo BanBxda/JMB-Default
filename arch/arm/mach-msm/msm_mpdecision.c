@@ -372,7 +372,7 @@ static ssize_t store_idle_freq(struct kobject *a, struct attribute *b,
 	ret = sscanf(buf, "%lu", &input);
 	if (ret != 1)
 		return -EINVAL;
-	msm_mpdec_tuners_ins.idle_freq = acpu_check_khz_value(input);
+	msm_mpdec_tuners_ins.idle_freq = input;
 
 	return count;
 }
