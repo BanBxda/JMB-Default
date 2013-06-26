@@ -289,9 +289,6 @@ deps_config := \
 	drivers/video/msm_8x60/Kconfig \
 	drivers/video/geode/Kconfig \
 	drivers/gpu/msm/Kconfig \
-	drivers/gpu/msm_adreno220/Kconfig \
-	drivers/gpu/msm_adreno205/Kconfig \
-	drivers/gpu/Kconfig \
 	drivers/gpu/ion/Kconfig \
 	drivers/gpu/stub/Kconfig \
 	drivers/gpu/drm/radeon/Kconfig \

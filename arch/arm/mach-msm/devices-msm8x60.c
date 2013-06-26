@@ -746,7 +746,7 @@ static struct msm_bus_vectors grp3d_low_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(990),
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
 	},
 };
 
@@ -755,16 +755,17 @@ static struct msm_bus_vectors grp3d_nominal_low_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(1300),
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
 	},
 };
 
+#ifdef CONFIG_GPU_OVERCLOCK
 static struct msm_bus_vectors grp3d_nominal_high_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(2008),
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
 	},
 };
 
@@ -773,9 +774,28 @@ static struct msm_bus_vectors grp3d_max_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(2656),
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
 	},
 };
+#else
+static struct msm_bus_vectors grp3d_nominal_high_vectors[] = {
+	{
+		.src = MSM_BUS_MASTER_GRAPHICS_3D,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab = 0,
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
+	},
+};
+
+static struct msm_bus_vectors grp3d_max_vectors[] = {
+	{
+		.src = MSM_BUS_MASTER_GRAPHICS_3D,
+		.dst = MSM_BUS_SLAVE_EBI_CH0,
+		.ab = 0,
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
+	},
+};
+#endif
 
 static struct msm_bus_paths grp3d_bus_scale_usecases[] = {
 	{
@@ -820,7 +840,7 @@ static struct msm_bus_vectors grp2d0_max_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_2D_CORE0,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(1300),
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
 	},
 };
 
@@ -855,7 +875,7 @@ static struct msm_bus_vectors grp2d1_max_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_2D_CORE1,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(1300),
+		.ib = KGSL_CONVERT_TO_MBPS(119080),
 	},
 };
 
@@ -907,6 +927,7 @@ static struct resource kgsl_3d0_resources[] = {
 	},
 };
 
+#ifdef CONFIG_GPU_OVERCLOCK
 static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwrlevel = {
 		{
@@ -922,39 +943,69 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 		{
 			.gpu_freq = 266667000,
 			.bus_freq = 4,
-			.io_fraction = 0,
+			.io_fraction = 25,
 		},
 		{
 			.gpu_freq = 228571000,
 			.bus_freq = 3,
-			.io_fraction = 33,
+			.io_fraction = 50,
 		},
 		{
 			.gpu_freq = 200000000,
 			.bus_freq = 2,
 			.io_fraction = 100,
 		},
-		{
-			.gpu_freq = 177778000,
-			.bus_freq = 1,
-			.io_fraction = 100,
-		},
-		{
-			.gpu_freq = 27000000,
-			.bus_freq = 0,
-		},
 	},
-	.init_level = 1,
-	.max_level = 1,
-	.num_levels = 7,
+	.init_level = 4,
+	.num_levels = 5,
 	.set_grp_async = NULL,
 	.idle_timeout = HZ/5,
-	.nap_allowed = true,
+	.nap_allowed = false,
 	.clk_map = KGSL_CLK_CORE | KGSL_CLK_IFACE | KGSL_CLK_MEM_IFACE,
 #ifdef CONFIG_MSM_BUS_SCALING
 	.bus_scale_table = &grp3d_bus_scale_pdata,
 #endif
 };
+#else
+static struct kgsl_device_platform_data kgsl_3d0_pdata = {
+	.pwrlevel = {
+		{
+			.gpu_freq = 320000000,
+			.bus_freq = 4,
+			.io_fraction = 0,
+		},
+		{
+			.gpu_freq = 300000000,
+			.bus_freq = 4,
+			.io_fraction = 0,
+		},
+		{
+			.gpu_freq = 266667000,
+			.bus_freq = 4,
+			.io_fraction = 25,
+		},
+		{
+			.gpu_freq = 228571000,
+			.bus_freq = 3,
+			.io_fraction = 50,
+		},
+		{
+			.gpu_freq = 200000000,
+			.bus_freq = 2,
+			.io_fraction = 100,
+		},
+	},
+	.init_level = 4,
+	.num_levels = 5,
+	.set_grp_async = NULL,
+	.idle_timeout = HZ/5,
+	.nap_allowed = false,
+	.clk_map = KGSL_CLK_CORE | KGSL_CLK_IFACE | KGSL_CLK_MEM_IFACE,
+#ifdef CONFIG_MSM_BUS_SCALING
+	.bus_scale_table = &grp3d_bus_scale_pdata,
+#endif
+};
+#endif
 
 struct platform_device msm_kgsl_3d0 = {
 	.name = "kgsl-3d0",
@@ -984,20 +1035,31 @@ static struct resource kgsl_2d0_resources[] = {
 static struct kgsl_device_platform_data kgsl_2d0_pdata = {
 	.pwrlevel = {
 		{
+			.gpu_freq = 266667000,
+			.bus_freq = 2,
+		},
+		{
 			.gpu_freq = 228571000,
-			.bus_freq = 1,
+			.bus_freq = 2,
 		},
 		{
 			.gpu_freq = 200000000,
-			.bus_freq = 0,
+			.bus_freq = 2,
+		},
+		{
+			.gpu_freq = 160000000,
+			.bus_freq = 2,
+		},
+		{
+			.gpu_freq = 145455000,
+			.bus_freq = 1,
 		},
 	},
-	.init_level = 0,
-	.max_level = 0,
-	.num_levels = 2,
+	.init_level = 4,
+	.num_levels = 5,
 	.set_grp_async = NULL,
 	.idle_timeout = HZ/10,
-	.nap_allowed = true,
+	.nap_allowed = false,
 	.clk_map = KGSL_CLK_CORE | KGSL_CLK_IFACE,
 #ifdef CONFIG_MSM_BUS_SCALING
 	.bus_scale_table = &grp2d0_bus_scale_pdata,
@@ -1032,20 +1094,31 @@ static struct resource kgsl_2d1_resources[] = {
 static struct kgsl_device_platform_data kgsl_2d1_pdata = {
 	.pwrlevel = {
 		{
+			.gpu_freq = 266667000,
+			.bus_freq = 2,
+		},
+		{
 			.gpu_freq = 228571000,
-			.bus_freq = 1,
+			.bus_freq = 2,
 		},
 		{
 			.gpu_freq = 200000000,
-			.bus_freq = 0,
+			.bus_freq = 2,
+		},
+		{
+			.gpu_freq = 160000000,
+			.bus_freq = 2,
+		},
+		{
+			.gpu_freq = 145455000,
+			.bus_freq = 1,
 		},
 	},
-	.init_level = 0,
-	.max_level = 0,
-	.num_levels = 2,
+	.init_level = 4,
+	.num_levels = 5,
 	.set_grp_async = NULL,
 	.idle_timeout = HZ/10,
-	.nap_allowed = true,
+	.nap_allowed = false,
 	.clk_map = KGSL_CLK_CORE | KGSL_CLK_IFACE,
 #ifdef CONFIG_MSM_BUS_SCALING
 	.bus_scale_table = &grp2d1_bus_scale_pdata,
@@ -1725,7 +1798,7 @@ static void dsps_init1(struct msm_dsps_platform_data *data)
 
 static struct dsps_clk_info dsps_clks[] = {
 	{
-		.name = "ppss_pclk",
+		.name = "iface_clk",
 		.rate =	0, /* no rate just on/off */
 	},
 	{
@@ -2407,12 +2480,7 @@ struct msm_vidc_platform_data vidc_platform_data = {
 	.vidc_bus_client_pdata = &vidc_bus_client_data,
 #endif
 	.memtype = MEMTYPE_SMI_KERNEL,
-#ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
-	.enable_ion = 1,
-#else
-	.enable_ion = 0,
-#endif
-	.disable_dmx = 0
+	.disable_dmx = 0,
 };
 
 struct platform_device msm_device_vidc = {
@@ -2439,6 +2507,22 @@ struct platform_device msm_rpm_stat_device = {
 	},
 };
 #endif
+
+#define SHARED_IMEM_TZ_BASE 0x2a05f720
+static struct resource tzlog_resources[] = {
+	{
+		.start = SHARED_IMEM_TZ_BASE,
+		.end = SHARED_IMEM_TZ_BASE + SZ_4K - 1,
+		.flags = IORESOURCE_MEM,
+	},
+};
+
+struct platform_device msm_device_tz_log = {
+	.name		= "tz_log",
+	.id		= 0,
+	.num_resources	= ARRAY_SIZE(tzlog_resources),
+	.resource	= tzlog_resources,
+};
 
 #ifdef CONFIG_MSM_MPM
 static uint16_t msm_mpm_irqs_m2a[MSM_MPM_NR_MPM_IRQS] = {
@@ -2874,3 +2958,15 @@ struct xoadc_platform_data pm8058_xoadc_pdata = {
 	.xoadc_vreg_shutdown = pmic8058_xoadc_vreg_shutdown,
 };
 #endif
+
+static int msm8660_LPM_latency = 1000; /* >100 usec for WFI */
+
+struct platform_device msm8660_cpu_idle_device = {
+	.name   = "msm_cpu_idle",
+	.id     = -1,
+	.dev = {
+		.platform_data = &msm8660_LPM_latency,
+	},
+};
+
+
